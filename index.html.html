@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Telegraph — A History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Spectral:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1208;
+    --paper: #f5f0e8;
+    --aged: #e8dfc8;
+    --sepia: #8b6914;
+    --rust: #9b3a1a;
+    --wire: #2c4a2e;
+    --muted: #5c4f38;
+    --light-muted: #a08c6e;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: 'Spectral', Georgia, serif;
+    font-weight: 300;
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.5;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    position: relative;
+    border-bottom: 2px solid var(--sepia);
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(139,105,20,0.12) 0%, transparent 70%),
+      var(--paper);
+  }
+
+  .hero-rule {
+    width: 120px;
+    height: 1px;
+    background: var(--sepia);
+    margin: 0 auto 2rem;
+    opacity: 0.5;
+  }
+
+  .hero-kicker {
+    font-family: 'Spectral', serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sepia);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.4s forwards;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--rust);
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.6s forwards;
+    font-style: italic;
+  }
+
+  .hero-date {
+    margin-top: 3rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--light-muted);
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  /* Decorative morse dots */
+  .morse-strip {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+  .morse-strip span {
+    display: block;
+    height: 3px;
+    background: var(--sepia);
+    border-radius: 2px;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(245,240,232,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(139,105,20,0.2);
+    padding: 0 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    overflow-x: auto;
+  }
+
+  nav a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 1rem 1.25rem;
+    transition: color 0.2s;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+  }
+  nav a:hover { color: var(--rust); border-bottom-color: var(--rust); }
+
+  /* ── SECTIONS ── */
+  section {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+  }
+
+  .section-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 700;
+    color: var(--aged);
+    line-height: 1;
+    margin-bottom: -1rem;
+    user-select: none;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sepia);
+    margin-bottom: 0.75rem;
+  }
+
+  section h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+    color: var(--ink);
+  }
+
+  section h2 em { font-style: italic; color: var(--rust); }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--sepia); opacity: 0.25; }
+  .divider-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sepia); opacity: 0.4; }
+
+  p { margin-bottom: 1.25rem; font-size: 1.05rem; color: var(--ink); }
+  p:last-child { margin-bottom: 0; }
+
+  strong { font-weight: 400; color: var(--rust); font-style: italic; }
+
+  /* Pull quote */
+  .pull-quote {
+    border-left: 3px solid var(--sepia);
+    margin: 2.5rem 0;
+    padding: 1rem 1.75rem;
+    background: rgba(139,105,20,0.05);
+  }
+  .pull-quote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .pull-quote cite {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--light-muted);
+  }
+
+  /* Fact boxes */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: rgba(139,105,20,0.15);
+    border: 1px solid rgba(139,105,20,0.15);
+    margin: 2.5rem 0;
+  }
+  .fact-box {
+    background: var(--paper);
+    padding: 1.5rem;
+  }
+  .fact-box .fact-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--rust);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .fact-box .fact-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* Timeline */
+  .timeline { margin: 2.5rem 0; }
+  .tl-item {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: 79px;
+    top: 24px;
+    bottom: -1.5rem;
+    width: 1px;
+    background: rgba(139,105,20,0.2);
+  }
+  .tl-item:last-child::before { display: none; }
+  .tl-year {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--sepia);
+    padding-top: 2px;
+    text-align: right;
+    line-height: 1.4;
+  }
+  .tl-content {
+    background: var(--aged);
+    padding: 1rem 1.25rem;
+    border-radius: 2px;
+  }
+  .tl-content strong { font-weight: 700; font-style: normal; color: var(--ink); }
+  .tl-content p { font-size: 0.9rem; margin: 0.25rem 0 0; color: var(--muted); }
+
+  /* How it works diagram */
+  .diagram {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2.5rem;
+    margin: 2.5rem 0;
+    font-family: 'Spectral', serif;
+  }
+  .diagram-title {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--light-muted);
+    margin-bottom: 1.5rem;
+  }
+  .circuit {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .circuit-node {
+    background: rgba(245,240,232,0.08);
+    border: 1px solid rgba(245,240,232,0.2);
+    padding: 0.75rem 1rem;
+    text-align: center;
+    min-width: 120px;
+  }
+  .circuit-node .node-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light-muted);
+    margin-bottom: 0.3rem;
+  }
+  .circuit-node .node-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--paper);
+  }
+  .circuit-arrow {
+    flex: 1;
+    min-width: 40px;
+    height: 1px;
+    background: rgba(245,240,232,0.2);
+    position: relative;
+    margin: 0 4px;
+  }
+  .circuit-arrow::after {
+    content: '▶';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 8px;
+    color: rgba(245,240,232,0.3);
+  }
+  .morse-code {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    align-items: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+  .morse-symbol {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .morse-letter {
+    font-size: 0.7rem;
+    color: var(--light-muted);
+    letter-spacing: 0.1em;
+  }
+  .morse-marks {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    height: 8px;
+  }
+  .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sepia); }
+  .dash { width: 14px; height: 5px; border-radius: 2px; background: var(--sepia); }
+
+  /* Section separator */
+  .section-sep {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  .sep-line {
+    border: none;
+    border-top: 1px solid rgba(139,105,20,0.2);
+  }
+
+  /* Impact list */
+  .impact-list { list-style: none; margin: 1.5rem 0; }
+  .impact-list li {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(139,105,20,0.12);
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 1rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    align-items: start;
+  }
+  .impact-list li::before {
+    content: '—';
+    color: var(--rust);
+    font-family: 'Playfair Display', serif;
+  }
+  .impact-list li strong { font-weight: 700; font-style: normal; color: var(--ink); display: block; margin-bottom: 0.2rem; }
+
+  /* Footer */
+  footer {
+    background: var(--ink);
+    color: var(--light-muted);
+    text-align: center;
+    padding: 3rem 2rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    line-height: 2;
+  }
+  footer .footer-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    color: var(--aged);
+    margin-bottom: 1rem;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    nav { justify-content: flex-start; }
+    .circuit { flex-direction: column; }
+    .circuit-arrow { width: 1px; min-width: 1px; height: 24px; }
+    .circuit-arrow::after { content: '▼'; right: auto; left: 50%; top: unset; bottom: -8px; transform: translateX(-50%); }
+    .tl-item { grid-template-columns: 60px 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-rule"></div>
+  <p class="hero-kicker">A History of Communication</p>
+  <h1>The <em>Telegraph</em></h1>
+  <p class="hero-subtitle">How a wire, a battery, and a simple code shrank the world and rewired civilization</p>
+  <p class="hero-date">1837 &nbsp;—&nbsp; Present Day</p>
+  <div class="morse-strip">
+    <!-- "TELEGRAPH" in morse-ish decorative dashes -->
+    <span style="width:14px"></span><span style="width:5px"></span><span style="width:14px"></span>
+    <span style="width:5px"></span><span style="width:5px"></span><span style="width:14px"></span>
+    <span style="width:5px"></span><span style="width:14px"></span><span style="width:5px"></span>
+    <span style="width:5px"></span><span style="width:14px"></span><span style="width:14px"></span>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <a href="#what">What Is It</a>
+  <a href="#how">How It Works</a>
+  <a href="#society">Society</a>
+  <a href="#commerce">Commerce</a>
+  <a href="#today">Legacy Today</a>
+</nav>
+
+<!-- SECTION 1: WHAT IS IT -->
+<section id="what">
+  <div class="section-number reveal">01</div>
+  <p class="section-label reveal">Definition & Origins</p>
+  <h2 class="reveal">What <em>is</em> the Telegraph?</h2>
+  <div class="divider reveal"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <p class="reveal">The <strong>electric telegraph</strong> is a system for transmitting text messages over long distances using electrical signals sent along a wire. It was the first technology in human history to allow near-instantaneous communication across continents — a revolution so profound that contemporaries compared it to a second creation.</p>
+
+  <p class="reveal">Before the telegraph, the fastest message traveled only as fast as a horse or a ship. News of a battle, a market crash, or a death might take days or weeks to cross a country. The telegraph collapsed that delay to seconds.</p>
+
+  <div class="timeline reveal">
+    <div class="tl-item">
+      <div class="tl-year">1816</div>
+      <div class="tl-content"><strong>Ronalds' telegraph</strong><p>Francis Ronalds builds an 8-mile electrostatic telegraph in his garden — the British Admiralty calls it "wholly unnecessary."</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1837</div>
+      <div class="tl-content"><strong>Cooke & Wheatstone patent</strong><p>The first commercial telegraph is deployed on a British railway line, using five needles to point at letters.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1838</div>
+      <div class="tl-content"><strong>Morse & Vail demonstrate</strong><p>Samuel Morse and Alfred Vail demonstrate their single-wire system in New Jersey. Vail likely invented the dot-dash code.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1844</div>
+      <div class="tl-content"><strong>"What hath God wrought"</strong><p>Morse sends the first long-distance telegraph message from Washington D.C. to Baltimore, inaugurating the age of electric communication.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1866</div>
+      <div class="tl-content"><strong>Transatlantic cable</strong><p>The SS Great Eastern successfully lays a permanent undersea cable linking North America and Europe.</p></div>
+    </div>
+  </div>
+
+  <p class="reveal">The name itself comes from the Greek: <em>tele</em> (far) and <em>graphein</em> (to write). To "write at a distance" — it was a literal promise kept by copper wire and electricity.</p>
+</section>
+
+<div class="section-sep"><hr class="sep-line"></div>
+
+<!-- SECTION 2: HOW IT WORKS -->
+<section id="how">
+  <div class="section-number reveal">02</div>
+  <p class="section-label reveal">Mechanics & Science</p>
+  <h2 class="reveal">How Does <em>It Work?</em></h2>
+  <div class="divider reveal"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <p class="reveal">A telegraph system is elegantly simple at its core: a battery, a switch (called a key), a wire, and an electromagnet at the far end. Press the key and you complete an electrical circuit — the electromagnet at the receiving station clicks. Release the key and the circuit breaks — it clicks again.</p>
+
+  <div class="diagram reveal">
+    <p class="diagram-title">The Electric Circuit</p>
+    <div class="circuit">
+      <div class="circuit-node">
+        <div class="node-label">Sender</div>
+        <div class="node-name">Battery + Key</div>
+      </div>
+      <div class="circuit-arrow"></div>
+      <div class="circuit-node">
+        <div class="node-label">Medium</div>
+        <div class="node-name">Copper Wire</div>
+      </div>
+      <div class="circuit-arrow"></div>
+      <div class="circuit-node">
+        <div class="node-label">Receiver</div>
+        <div class="node-name">Electromagnet</div>
+      </div>
+      <div class="circuit-arrow"></div>
+      <div class="circuit-node">
+        <div class="node-label">Decoded by</div>
+        <div class="node-name">Operator</div>
+      </div>
+    </div>
+    <div style="margin-top:2rem; border-top:1px solid rgba(245,240,232,0.1); padding-top:1.5rem;">
+      <p class="diagram-title">Morse Code — sample letters</p>
+      <div class="morse-code">
+        <div class="morse-symbol"><div class="morse-letter">S</div><div class="morse-marks"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+        <div class="morse-symbol"><div class="morse-letter">O</div><div class="morse-marks"><div class="dash"></div><div class="dash"></div><div class="dash"></div></div></div>
+        <div class="morse-symbol"><div class="morse-letter">S</div><div class="morse-marks"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+        <div style="width:1px;height:30px;background:rgba(245,240,232,0.1);margin:0 8px;"></div>
+        <div class="morse-symbol"><div class="morse-letter">A</div><div class="morse-marks"><div class="dot"></div><div class="dash"></div></div></div>
+        <div class="morse-symbol"><div class="morse-letter">B</div><div class="morse-marks"><div class="dash"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+        <div class="morse-symbol"><div class="morse-letter">C</div><div class="morse-marks"><div class="dash"></div><div class="dot"></div><div class="dash"></div><div class="dot"></div></div></div>
+        <div class="morse-symbol"><div class="morse-letter">E</div><div class="morse-marks"><div class="dot"></div></div></div>
+        <div class="morse-symbol"><div class="morse-letter">T</div><div class="morse-marks"><div class="dash"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="reveal"><strong>Short pulses</strong> are "dots" and long pulses are "dashes." Each letter of the alphabet is assigned a unique pattern. A trained operator could send and receive 25–35 words per minute — fast enough to be commercially useful and fast enough to feel like magic to those who witnessed it.</p>
+
+  <p class="reveal">The key engineering challenges were distance and signal degradation. Electricity weakens over long wires. The solution was <strong>relay stations</strong> — repeater offices every 200–300 miles that received a weakened signal and retransmitted it at full strength, like a chain of shouters passing a message across a valley.</p>
+
+  <p class="reveal">For undersea cables, the challenge was insulation. The solution was <strong>gutta-percha</strong>, a natural rubber from Malay trees, which proved ideal for waterproofing cables that sat on the ocean floor under enormous pressure.</p>
+
+  <div class="fact-grid reveal">
+    <div class="fact-box"><div class="fact-num">25 wpm</div><div class="fact-label">Average skilled operator speed</div></div>
+    <div class="fact-box"><div class="fact-num">2,000+</div><div class="fact-label">Miles of wire laid in the US by 1848</div></div>
+    <div class="fact-box"><div class="fact-num">~0.7c</div><div class="fact-label">Signal speed (fraction of light speed)</div></div>
+    <div class="fact-box"><div class="fact-num">3 tries</div><div class="fact-label">Before the transatlantic cable held</div></div>
+  </div>
+</section>
+
+<div class="section-sep"><hr class="sep-line"></div>
+
+<!-- SECTION 3: SOCIETAL IMPLICATIONS -->
+<section id="society">
+  <div class="section-number reveal">03</div>
+  <p class="section-label reveal">Culture, Power & People</p>
+  <h2 class="reveal">Societal <em>Implications</em></h2>
+  <div class="divider reveal"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <p class="reveal">The telegraph did not merely speed up communication — it changed what communication meant. For the first time in history, information could travel faster than a human body. That single fact reshuffled power, identity, and the nature of news itself.</p>
+
+  <div class="pull-quote reveal">
+    <p>"The whole earth will be belted with electric current, panting and quivering with human thought."</p>
+    <cite>— Harper's New Monthly Magazine, 1880</cite>
+  </div>
+
+  <ul class="impact-list">
+    <li class="reveal"><div><strong>The birth of modern news</strong> Newspapers transformed overnight. The Associated Press (founded 1846) used telegraph lines to gather stories from across the country and deliver them simultaneously to multiple papers. "News" was redefined as something that happens now — not days ago.</div></li>
+    <li class="reveal"><div><strong>National identity & coordination</strong> For a country as large as the United States, the telegraph created a sense of shared national experience. Americans in California could read about events in Washington on the same day they occurred. The nation began to feel smaller and more unified.</div></li>
+    <li class="reveal"><div><strong>Military strategy transformed</strong> The American Civil War was the first conflict managed substantially by telegraph. Lincoln famously camped in the War Department's telegraph office to receive battlefield dispatches. Generals could coordinate across hundreds of miles in real time — changing both strategy and the scale of warfare.</div></li>
+    <li class="reveal"><div><strong>Women in the workforce</strong> Telegraph offices became one of the first professional environments to hire women in large numbers. Female operators were considered especially skilled and reliable. By 1870, women made up a significant portion of telegraph operators — an early crack in professional gender barriers.</div></li>
+    <li class="reveal"><div><strong>Time itself changed</strong> Before the telegraph, every town kept its own local time based on the sun. Railroads and telegraphs required standardized time across regions — directly leading to the creation of standardized time zones in 1883.</div></li>
+    <li class="reveal"><div><strong>The psychology of urgency</strong> A telegram carried inherent weight. Receiving one meant something important had happened — often a death, a crisis, an emergency. This association shaped how people related to sudden news for over a century.</div></li>
+  </ul>
+</section>
+
+<div class="section-sep"><hr class="sep-line"></div>
+
+<!-- SECTION 4: COMMERCIAL IMPLICATIONS -->
+<section id="commerce">
+  <div class="section-number reveal">04</div>
+  <p class="section-label reveal">Markets, Trade & Industry</p>
+  <h2 class="reveal">Commercial <em>Implications</em></h2>
+  <div class="divider reveal"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <p class="reveal">If society was transformed by the telegraph's speed, commerce was turbocharged by it. The ability to send a price, an order, a warning, or a contract across a continent in seconds fundamentally changed what markets could do — and who could dominate them.</p>
+
+  <div class="fact-grid reveal">
+    <div class="fact-box"><div class="fact-num">$67M</div><div class="fact-label">Western Union's revenue by 1880 (~$2B today)</div></div>
+    <div class="fact-box"><div class="fact-num">1 min</div><div class="fact-label">Time to transmit a stock price London→NY (1866)</div></div>
+    <div class="fact-box"><div class="fact-num">185,000</div><div class="fact-label">Miles of telegraph wire in the US by 1880</div></div>
+    <div class="fact-box"><div class="fact-num">1st</div><div class="fact-label">True national monopoly: Western Union (1866)</div></div>
+  </div>
+
+  <ul class="impact-list">
+    <li class="reveal"><div><strong>Commodity markets went national (then global)</strong> Farmers in Ohio, merchants in New York, and exporters in London could now quote the same price in real time. Commodity speculation became a sophisticated, fast-moving market. The Chicago Board of Trade was founded in 1848 — directly tied to telegraph connectivity.</div></li>
+    <li class="reveal"><div><strong>Banking & finance transformed</strong> Banks could confirm funds, authorize transfers, and communicate credit decisions across vast distances. The modern concept of wire transfer is literally named after telegraph wires. Financial panics could now spread globally in hours rather than weeks.</div></li>
+    <li class="reveal"><div><strong>Western Union and the corporate monopoly</strong> By 1866, Western Union had consolidated the US telegraph industry into a single corporation — the first true national monopoly in American history. It controlled 75% of all US telegraph traffic and generated enormous political controversy about the dangers of private control over public infrastructure.</div></li>
+    <li class="reveal"><div><strong>Railroads and logistics</strong> Trains and telegraphs expanded together, each making the other more useful. The telegraph allowed real-time dispatch of trains, preventing collisions and enabling complex national rail networks. The transcontinental railroad and telegraph (completed 1861–1869) functionally unified the American economy.</div></li>
+    <li class="reveal"><div><strong>A new class of worker: the operator</strong> The telegraph created demand for a new skilled professional — the telegraph operator. By 1880, tens of thousands were employed in the US alone. It was one of the first technically skilled white-collar jobs that defined a new kind of "knowledge worker."</div></li>
+    <li class="reveal"><div><strong>The language of business changed</strong> Because telegrams were charged by the word, business communication became compressed, precise, and stripped of pleasantries. This telegraphic style directly influenced the terseness of modern business writing, email, and eventually texting.</div></li>
+  </ul>
+
+  <div class="pull-quote reveal">
+    <p>"The telegraph annihilated distance... and with it, the last barriers to a truly national economy."</p>
+    <cite>— Economic historians on the American market after 1850</cite>
+  </div>
+</section>
+
+<div class="section-sep"><hr class="sep-line"></div>
+
+<!-- SECTION 5: LEGACY TODAY -->
+<section id="today">
+  <div class="section-number reveal">05</div>
+  <p class="section-label reveal">Echoes in the Modern World</p>
+  <h2 class="reveal">What Does It Mean <em>Today?</em></h2>
+  <div class="divider reveal"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <p class="reveal">The last commercial telegram was sent by India's state telegraph service in 2013. But the telegraph's legacy is not nostalgia — it is infrastructure, both physical and conceptual. We live inside the world the telegraph made.</p>
+
+  <ul class="impact-list">
+    <li class="reveal"><div><strong>The internet runs on its bones</strong> The same undersea cable routes established for the telegraph in the 1860s and 1870s are, in many cases, the same corridors where modern fiber-optic internet cables run today. The "Victorian internet" built the physical geography of the digital one.</div></li>
+    <li class="reveal"><div><strong>Network effects and platform monopolies</strong> The Western Union monopoly debate is the direct ancestor of today's debates about Google, Meta, and Amazon. The question — should a private corporation control the primary communications infrastructure of a nation? — was first seriously asked because of the telegraph.</div></li>
+    <li class="reveal"><div><strong>The attention economy was born here</strong> AP wire services gave birth to the idea of compressed, decontextualized news delivered at speed. Media scholars argue that the telegraph established the template — breaking news, headlines, the premium placed on recency over depth — that governs media to this day.</div></li>
+    <li class="reveal"><div><strong>Encryption and privacy</strong> Telegrams were inherently readable by operators. Early telegraph companies developed commercial codes — precursors to modern encryption — to protect sensitive business messages. The tension between communication infrastructure and private secrecy is a direct lineage to today's end-to-end encryption debates.</div></li>
+    <li class="reveal"><div><strong>The psychology of "always-on" communication</strong> The telegraph introduced the expectation of immediacy — that important news should arrive now, not later. That expectation accelerated through the telephone, the fax, email, and the smartphone. The anxiety many people feel about being unreachable is a psychological inheritance of the telegraph age.</div></li>
+    <li class="reveal"><div><strong>Global governance challenges</strong> The telegraph was the first technology to require international cooperation to function. The International Telegraph Union, founded in 1865, is the oldest intergovernmental organization in the world — and it became the ITU, which today governs global internet standards and radio spectrum. The UN's approach to tech governance traces back to a Paris meeting about telegraph cables.</div></li>
+  </ul>
+
+  <div class="pull-quote reveal">
+    <p>Every time you send a text, post a tweet, or wire money overseas, you are operating inside a world the telegraph made possible.</p>
+    <cite>— A closing thought for your students</cite>
+  </div>
+
+  <p class="reveal">The telegraph was not just a technology. It was the first proof that human civilization could coordinate at the speed of thought — and the first warning that doing so would create new inequalities, new anxieties, and new questions about who controls the wires.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-title">The Telegraph, 1837–2013</div>
+  <p>Prepared for classroom presentation &nbsp;·&nbsp; 5–10 minute overview</p>
+  <p style="margin-top:0.5rem; opacity:0.5;">Sources: Smithsonian, Library of Congress, Tom Standage <em>The Victorian Internet</em> (1998), ITU archives</p>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
